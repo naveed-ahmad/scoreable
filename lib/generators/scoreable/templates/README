@@ -1,0 +1,7 @@
+==========================================================
+  Great now next steps are:
+    * Change configuration in config/initialize/scoreable.rb to configure your core term name what about 'point' or 'karma'?
+    * run rails g scoreable:install
+    * rake db:migrate
+    * read readme to learn how to generate scores for your users
+==========================================================

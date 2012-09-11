@@ -1,18 +1,30 @@
-*.gem
-*.rbc
-.bundle
-.config
+# rcov generated
 coverage
-InstalledFiles
-lib/bundler/man
-pkg
+coverage.data
+.rvmrc
+# rdoc generated
 rdoc
-spec/reports
-test/tmp
-test/version_tmp
-tmp
 
-# YARD artifacts
+# yard generated
+doc
 .yardoc
-_yardoc
-doc/
+
+# bundler
+.bundle
+
+# jeweler generated
+pkg
+
+# For vim:
+*.swp
+nbproject/*
+
+*.rbc
+*.sassc
+.rspec
+/.bundle
+/vendor/bundle
+/tmp/*
+/coverage/
+/spec/tmp/*
+**.orig

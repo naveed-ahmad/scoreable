@@ -1,4 +1,4 @@
 scoreable
 =========
 
-generate score for your users on performing specific activities within your application.
+generate score for user on performing specific activities within your application. 
