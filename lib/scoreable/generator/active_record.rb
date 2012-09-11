@@ -3,6 +3,9 @@ module Scoreable
     module GeneratedMethods;  end
 
     module ClassMethods
+      mattr_accessor :score_receiver
+      alias_method "#{Scoreable.score_term}_receiver", :score_receiver
+      
       ## Scoreable.score_term = 'score'
       ## use to configure score generation scheme
       #  Example:
@@ -14,37 +17,49 @@ module Scoreable
       ##   generate_score create: { :score: 5, for: :user, callback: :report_score}
       ##
       ##    You can configure score for multiple method in single call
-      ##   generate_score update: 4, create: 5, upvote: {score: 5, for: :upvoter}
+      ##    generate_score update: 4, create: 5, upvote: {score: 5, for: :upvoter}
       ##
       def generate_score(args)
         include Scoreable::Generator::InstanceMethods
         
         args.keys.each do |action|
-          score = args[action]
-          action = action.to_s
+          score_config = args[action]
 
-          method_without_score_feature = action+"_without_#{Scoreable.score_term}"
-          method_with_score_feature = action+"_with_#{Scoreable.score_term}"
+          if score_config.is_a? Hash
+            score = score_config[Scoreable.score_term.to_sym]
+            callback_method = score_config[:callback]
+            receivers = score_config[:for]
+          else
+            callback_method = nil
+            receivers = [score_receiver]
+            score = score_config
+          end
+          actions = action.is_a?(Array) ? action : [action.to_s]
 
-          Scoreable::Generator::GeneratedMethods.class_eval do
-            define_method method_with_score_feature.to_sym do
-              send method_without_score_feature
-              log_score 5,action, 'user'
+          actions.each do |action|
+            action= action.to_s
+            method_without_score_feature = action+"_without_#{Scoreable.score_term}"
+            method_with_score_feature = action+"_with_#{Scoreable.score_term}"
+
+            Scoreable::Generator::GeneratedMethods.class_eval do
+              define_method method_with_score_feature.to_sym do
+                send method_without_score_feature
+                receivers.each do |receiver|
+                  score_obj= log_score score,action, receiver
+
+                  send callback_method,score_obj if callback_method
+                end
+                
+                
+              end
             end
+
+            include Scoreable::Generator::GeneratedMethods
+            alias_method_chain action, Scoreable.score_term
           end
         end
-
-        include Scoreable::Generator::GeneratedMethods
-
-        args.keys.each do |action|
-          alias_method_chain action, Scoreable.score_term
-        end
       end
-
       alias_method "generate_#{Scoreable.score_term}", :generate_score unless respond_to? "generate_#{Scoreable.score_term}"
-      
-      mattr_accessor :score_receiver
-      mattr_accessor "#{Scoreable.score_term}_receiver"
     end
 
     module InstanceMethods
