@@ -17,6 +17,30 @@ Gem::Specification.new do |s|
     "README.md",
     "README.rdoc"
   ]
+  s.files = [
+    ".document",
+    "Gemfile",
+    "Gemfile.lock",
+    "LICENSE.txt",
+    "README.md",
+    "README.rdoc",
+    "Rakefile",
+    "VERSION",
+    "lib/generators/scoreable/config_generator.rb",
+    "lib/generators/scoreable/install_generator.rb",
+    "lib/generators/scoreable/templates/README",
+    "lib/generators/scoreable/templates/README2",
+    "lib/generators/scoreable/templates/initializer.rb",
+    "lib/generators/scoreable/templates/migration.rb",
+    "lib/generators/scoreable/templates/score_model.rb",
+    "lib/scoreable.rb",
+    "lib/scoreable/generator/active_record.rb",
+    "lib/scoreable/receiver/active_record.rb",
+    "lib/scoreable/scoreable.rb",
+    "scoreable.gemspec",
+    "spec/scoreable_spec.rb",
+    "spec/spec_helper.rb"
+  ]
   s.homepage = %q{http://github.com/naveed-ahmad/scoreable}
   s.licenses = [%q{MIT}]
   s.require_paths = [%q{lib}]
