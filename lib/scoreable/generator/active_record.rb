@@ -28,29 +28,33 @@ module Scoreable
           if score_config.is_a? Hash
             score = score_config[Scoreable.score_term.to_sym]
             callback_method = score_config[:callback]
-            receivers = score_config[:for]
+            receivers = score_config[:for] || score_receiver
+            force_save = score_config[:save]
           else
             callback_method = nil
-            receivers = [score_receiver]
+            receivers = score_receiver
             score = score_config
+            force_save = false
           end
-          actions = action.is_a?(Array) ? action : [action.to_s]
+          
+          receivers = [receivers] unless receivers.is_a? Array
+          actions = [action] unless action.is_a? Array
 
           actions.each do |action|
-            action= action.to_s
-            method_without_score_feature = action+"_without_#{Scoreable.score_term}"
-            method_with_score_feature = action+"_with_#{Scoreable.score_term}"
+            action = action.to_s
+            method_without_score_feature = action + "_without_#{Scoreable.score_term}"
+            method_with_score_feature = action + "_with_#{Scoreable.score_term}"
 
             Scoreable::Generator::GeneratedMethods.class_eval do
               define_method method_with_score_feature.to_sym do
                 send method_without_score_feature
                 receivers.each do |receiver|
+                  send(receiver).save! if force_save
                   score_obj= log_score score,action, receiver
 
                   send callback_method,score_obj if callback_method
+                  score_obj
                 end
-                
-                
               end
             end
 
